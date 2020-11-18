@@ -15,8 +15,11 @@ from flask import send_file
 from cpabew import CPABEAlg
 from cpabe_key_gen import gen_cpabe_master_keys, gen_cpabe_org_secret_key
 from de import RSADOAEP, rsa_key
+from ore_key_gen import gen_ore_key_rand
 
 DE_key_location = "/secrets/DE_key.pem" 
+ORE_key_location = "/secrets/ORE_key.bin"
+
 
 def normalize_str(st):
    return st.replace("/","_")
@@ -34,10 +37,11 @@ def gen_de_key():
    global DE_key_location
 
    try:
-      open(DE_key_location, "r")
+      return = open(DE_key_location, "r").read()
    except FileNotFoundError:
       pem = rsa_key()
       open(DE_key_location, "w").write(pem)
+      return pem
 
 def get_de_key():
    global DE_key_location
@@ -47,7 +51,27 @@ def get_de_key():
    except FileNotFoundError:
       return Response(status=500)
 
-def gen_master_keys():
+
+def gen_ore_key():
+   global ORE_key_location
+
+   try:
+      return open(ORE_key_location, "rb").read()
+   except FileNotFoundError:
+      ore_key = gen_ore_key_rand()
+      open(ORE_key_location, "wb").write(ore_key)
+      return ore_key
+
+
+def get_ore_key():
+   global ORE_key_location
+
+   try:
+      return open(ORE_key_location, "rb").read()
+   except FileNotFoundError:
+      return Response(status=500)
+
+def gen_cpabe_master_keys():
    bsw07 = CPABEAlg()
    pk_mk = gen_cpabe_master_keys(bsw07)
 
