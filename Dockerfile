@@ -11,3 +11,7 @@ RUN mkdir -p /secrets
 COPY ./kms-server /kms-server
 
 WORKDIR /kms-server
+EXPOSE 5000
+
+CMD ["/usr/bin/python3", "/kms-server/server.py"] 
+
