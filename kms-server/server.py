@@ -33,6 +33,8 @@ app.add_url_rule('/get/key/ore', methods=['GET'], view_func=views.get_ore_key)
 app.add_url_rule('/get/key/cpabe-pk', methods=['GET'], view_func=views.get_cpabe_pub_key)
 app.add_url_rule('/get/key/cpabe-sk', methods=['GET'], view_func=views.get_org_cpabe_secret)
 
+app.add_url_rule('/get/attributes', methods=['GET'], view_func=views.list_all_attributes)
+
 
 if __name__ == '__main__':
    app.run(host="0.0.0.0", port=5000 , debug=DEBUG, use_reloader=DEBUG)

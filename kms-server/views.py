@@ -7,7 +7,7 @@ sys.path.append("/priv-libs/libs")
 from pprint import pprint
 import traceback
 
-from flask import render_template
+#from flask import render_template
 from flask import Response, request
 from flask import send_file
 
@@ -163,5 +163,5 @@ def get_org_cpabe_secret():
       return Response(status=500)
 
 
-# def other():
-#     return render_template('other.html')
+def list_all_attributes():
+   return "Not implemented", 200
