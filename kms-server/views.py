@@ -111,6 +111,7 @@ def create_org_cpabe_secret():
       req_data = request.json
       name = normalize_str(req_data['name'])
       attribs = normalize_attribs(req_data['attributes'])
+      attribs = list(map(lambda x:x.upper(),attribs))
 
    except:
       return Response(status=400)
@@ -154,12 +155,16 @@ def get_org_cpabe_secret():
       bsw07 = CPABEAlg()
        
       sk = load_cpabe_org_secret_key_from_name(bsw07, name)
-      return bsw07.serialize_charm_obj(sk)
+      print("{} sk[attribs]: {}".format(name, sk["S"]),flush=True)
+
+      ser_sk = bsw07.serialize_charm_obj(sk)
+      return ser_sk
          
    except FileNotFoundError:
       return Response(status=400)
 
    except:
+      traceback.print_exc()
       return Response(status=500)
 
 
