@@ -1,0 +1,17 @@
+
+
+
+####################################
+##### no need to change below ######
+####################################
+
+# where is the kms backend db
+backed_DB_uri: "mongodb://priv-kms-db:27017/"
+
+# db name and coll names
+db_name: KMS_db
+attrib_col_name: attributes
+
+# internal to this container
+DE_key_location: "/secrets/DE_key.pem" 
+ORE_key_location: "/secrets/ORE_key.bin"

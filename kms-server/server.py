@@ -31,7 +31,7 @@ app.add_url_rule('/gen/key/cpabe-sk', methods=['POST'], view_func=views.create_o
 app.add_url_rule('/get/key/de', methods=['GET'], view_func=views.get_de_key)
 app.add_url_rule('/get/key/ore', methods=['GET'], view_func=views.get_ore_key)
 app.add_url_rule('/get/key/cpabe-pk', methods=['GET'], view_func=views.get_cpabe_pub_key)
-app.add_url_rule('/get/key/cpabe-sk', methods=['GET'], view_func=views.get_org_cpabe_secret)
+app.add_url_rule('/get/key/cpabe-sk', methods=['POST'], view_func=views.get_org_cpabe_secret)
 
 app.add_url_rule('/get/attributes', methods=['GET'], view_func=views.list_all_attributes)
 

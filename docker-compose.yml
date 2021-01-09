@@ -1,0 +1,35 @@
+version: "3.8"
+services:
+
+  priv-kms-api:
+    container_name: priv-kms-api
+    build: .
+    restart: always
+    ports:
+      - "5002:5000"
+    networks:
+      - priv-kms-net
+    volumes:
+      - "./secrets:/secrets/"
+    environment:
+      PYTHONUNBUFFERED: 1
+
+
+
+  priv-kms-db:
+    container_name: priv-kms-db
+    image: "mongo"
+    restart: always
+    ports:
+      - "5006:27017"
+    networks:
+      - priv-kms-net
+
+    volumes:
+      - "./db/db:/data/db"
+      - "./db/configdb:/data/configdb"
+      - "./db/logs:/var/log/mongodb"
+
+networks:
+  priv-kms-net: {}
+

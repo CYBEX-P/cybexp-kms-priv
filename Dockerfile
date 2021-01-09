@@ -9,9 +9,10 @@ RUN mkdir -p /secrets
 
 # copy kms-server last
 COPY ./kms-server /kms-server
+COPY ./config.yaml /kms-server/config.yaml
 
 WORKDIR /kms-server
 EXPOSE 5000
 
-CMD ["/usr/bin/python3", "/kms-server/server.py"] 
+ENTRYPOINT ["/usr/bin/python3", "-u", "/kms-server/server.py"] 
 
