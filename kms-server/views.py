@@ -25,7 +25,7 @@ from ore_key_gen import gen_ore_key_rand
 # ORE_key_location = "/secrets/ORE_key.bin"
 # backed_DB_uri = "mongodb://priv-backend-db:27017/"
 
-conf =load_yaml_file("./config.yaml")
+conf = load_yaml_file("/config.yaml")
 DE_key_location = conf["DE_key_location"]
 ORE_key_location = conf["ORE_key_location"]
 backed_DB_uri = conf["backed_DB_uri"]
@@ -210,4 +210,4 @@ def list_all_attributes():
    for r in al_records:
       all_attribs += r["atttributes"]
 
-   return {"atttributes": all_attribs}, 200
+   return {"atttributes": list(set(all_attribs))}, 200

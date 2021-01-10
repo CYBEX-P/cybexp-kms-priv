@@ -10,6 +10,7 @@ services:
     networks:
       - priv-kms-net
     volumes:
+      - "${CONFIG_FILE}:/config.yaml"
       - "./secrets:/secrets/"
     environment:
       PYTHONUNBUFFERED: 1

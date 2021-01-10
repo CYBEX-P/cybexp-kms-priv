@@ -2,6 +2,7 @@
 
 import sys
 sys.path.append("/priv-libs/libs")
+from priv_common import load_yaml_file
 
 
 from pprint import pprint
@@ -10,7 +11,8 @@ import traceback
 # ref: split into files
 #h ttps://stackoverflow.com/questions/11994325/how-to-divide-flask-app-into-multiple-py-files
 
-DEBUG = True
+conf = load_yaml_file("/config.yaml")
+DEBUG = conf["FLASK_DEBUG"]
 
 
 import views

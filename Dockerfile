@@ -9,7 +9,7 @@ RUN mkdir -p /secrets
 
 # copy kms-server last
 COPY ./kms-server /kms-server
-COPY ./config.yaml /kms-server/config.yaml
+# COPY ./config.yaml /kms-server/config.yaml
 
 WORKDIR /kms-server
 EXPOSE 5000
