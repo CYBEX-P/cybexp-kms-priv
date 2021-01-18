@@ -6,7 +6,7 @@ services:
     build: .
     restart: always
     ports:
-      - "${BIND_INTERFACE}:5000"
+      - "5002:5000"
     networks:
       - priv-kms-net
     volumes:

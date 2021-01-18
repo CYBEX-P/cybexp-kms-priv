@@ -41,8 +41,8 @@ function print_help {
 
    echo -e '  -c, --vacuum\t\tremove containers upon exit. If more than one container'
    echo -e '              \t\tof this type exists, it will remove all'
-   echo -e '  --bind [IFACE:]PORT'
-   echo -e '              \t\tinterface and/or port to bind to (eg 192.168.1.100:8080)(default: 5002)'
+   # echo -e '  --bind [IFACE:]PORT'
+   # echo -e '              \t\tinterface and/or port to bind to (eg 192.168.1.100:8080)(default: 5002)'
    
    echo -e '  -h, --help\t\tprint this help'
 
@@ -51,7 +51,7 @@ function print_help {
 }
 
 function build_image {
-   export "BIND_INTERFACE=$BIND_IFACE_PORT"
+   # export "BIND_INTERFACE=$BIND_IFACE_PORT"
 
    pushd $DIR_PATH > /dev/null 2>&1 # supress output
    $DOCKER_COMPOSE build
@@ -62,9 +62,9 @@ function run_image {
    pushd $DIR_PATH > /dev/null 2>&1 # supress output
    echo "config file: $CONFIG_FILE_P"
    export "CONFIG_FILE=$CONFIG_FILE_P"
-   export "BIND_INTERFACE=$BIND_IFACE_PORT"
+   # export "BIND_INTERFACE=$BIND_IFACE_PORT"
 
-   echo $BIND_INTERFACE
+   # echo $BIND_INTERFACE
    $DOCKER_COMPOSE up $REMOVE_ORPHANS
    # $DOCKER_COMPOSE stop $REMOVE_ORPHANS  > /dev/null 2>&1 # supress output
 
@@ -137,16 +137,16 @@ while (( "$#" )); do
       #    SHELL_DRUN_DB=1
       #    shift
       #    ;;
-      --bind)
-         if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
-            BIND_IFACE_PORT=$2
-            shift 2
-         else
-            echo "Error: Argument for $1 is missing" >&2
-            print_help
-            exit 1
-         fi
-         ;;
+      # --bind)
+      #    if [ -n "$2" ] && [ ${2:0:1} != "-" ]; then
+      #       BIND_IFACE_PORT=$2
+      #       shift 2
+      #    else
+      #       echo "Error: Argument for $1 is missing" >&2
+      #       print_help
+      #       exit 1
+      #    fi
+      #    ;;
       -*|--*=) # unsupported flags
          echo "Error: Unsupported flag $1" >&2
          exit 1
