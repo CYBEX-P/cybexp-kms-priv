@@ -22,7 +22,7 @@ services:
     image: "mongo"
     restart: always
     ports:
-      - "5006:27017"
+      - "127.0.0.1:5006:27017"
     networks:
       - priv-kms-net
 
