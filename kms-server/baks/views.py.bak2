@@ -1,0 +1,214 @@
+#!/usr/bin/env python3
+
+import sys
+sys.path.append("/priv-libs/libs")
+from priv_common import load_yaml_file
+import db_common
+
+from pprint import pprint
+import traceback
+
+#from flask import render_template
+from flask import Response, request
+from flask import send_file
+from flask_jwt_extended import get_jwt_identity
+from flask_jwt_extended import jwt_required
+
+from cpabew import CPABEAlg
+from cpabe_key_gen import gen_cpabe_master_keys, gen_cpabe_org_secret_key, load_cpabe_org_secret_key_from_name, load_cpabe_master_keys
+from de import RSADOAEP, rsa_key
+from ore_key_gen import gen_ore_key_rand
+
+
+
+
+# DE_key_location = "/secrets/DE_key.pem" 
+# ORE_key_location = "/secrets/ORE_key.bin"
+# backed_DB_uri = "mongodb://priv-backend-db:27017/"
+
+conf = load_yaml_file("/config.yaml")
+DE_key_location = conf["DE_key_location"]
+ORE_key_location = conf["ORE_key_location"]
+backed_DB_uri = conf["backed_DB_uri"]
+
+db_name = conf["db_name"]
+attrib_col_name = conf["attrib_col_name"]
+
+
+ATTIRB_COL = db_common.get_collection(backed_DB_uri,db_name=db_name, col_name=attrib_col_name)
+
+
+def normalize_str(st):
+   st = st.replace("/","__")
+   st = st.replace(" ","_")
+   return st
+
+def normalize_attribs(attribs):
+   return list(map(normalize_str, attribs))
+
+
+def index():
+   # return Response(status=403)
+   return "up", 200
+
+def gen_de_key():
+   global DE_key_location
+
+   try:
+      k = open(DE_key_location, "r").read().encode()
+      return "Already exists", 409
+   except FileNotFoundError:
+      print("read failed, generating",flush=True)
+      pem = rsa_key().decode()
+      open(DE_key_location, "w").write(pem)
+      return "Ok", 201
+   except:
+      traceback.print_exc()
+      return Response(status=500)
+
+
+def get_de_key():
+   global DE_key_location
+
+   try:
+      k = open(DE_key_location, "r").read().encode()
+      return k
+   except FileNotFoundError:
+      return Response(status=500)
+
+
+def gen_ore_key():
+   global ORE_key_location
+
+   try:
+      k = open(ORE_key_location, "rb").read()
+      return "Already exists", 409
+   except FileNotFoundError:
+      ore_key = gen_ore_key_rand()
+      open(ORE_key_location, "wb").write(ore_key)
+      return "Ok", 201
+
+
+def get_ore_key():
+   global ORE_key_location
+
+   try:
+      k = open(ORE_key_location, "rb").read()
+      return k
+   except FileNotFoundError:
+      return Response(status=500)
+
+def gen_cpabe_master_keys_endpoint():
+   bsw07 = CPABEAlg()
+   pk_mk = gen_cpabe_master_keys(bsw07)
+
+   return "Ok", 201
+
+def get_cpabe_pub_key():
+   try:
+      bsw07 = CPABEAlg()
+
+      pk = load_cpabe_master_keys(bsw07, pub_only=True)
+
+      # return send_file(bsw07.serialize_charm_obj(pk))
+      return bsw07.serialize_charm_obj(pk)
+   except:
+      traceback.print_exc()
+      return Response(status=500)
+
+
+
+def create_org_cpabe_secret():
+   global ATTIRB_COL
+   # req_data = request.get_json()
+
+   # todo check if already exists
+
+   try:
+
+      req_data = request.json
+
+      if type(req_data['name']) != str:
+       return "name must be string", 400
+      if type(req_data['attributes']) != list:
+       return "attributes must be list", 400
+
+      name = normalize_str(req_data['name'])
+      attribs = normalize_attribs(req_data['attributes'])
+      attribs = list(map(lambda x:x.upper(),attribs))
+
+   except:
+      return Response(status=400)
+
+   try:
+      bsw07 = CPABEAlg()
+
+      try:
+         sk = load_cpabe_org_secret_key_from_name(bsw07, name)
+         return "Already exists", 409
+      except FileNotFoundError:
+         pk_mk = gen_cpabe_master_keys(bsw07)
+         if pk_mk:
+            # the following also checks the file to see if it exits already
+            sk = gen_cpabe_org_secret_key(bsw07, pk_mk, name, attribs)
+
+            doc = {
+                     "name": name,
+                     "attributes": attribs
+                   }
+            try:
+               ATTIRB_COL.insert_one(dict(doc)) # this adds an id which is non serialasible, so deep copy
+               pass
+            except:
+               traceback.print_exc()
+               print("failed to insert to attrib table",flush=True)
+               pass
+            return doc, 201
+
+         return Response(status=500)
+      
+   except:
+      traceback.print_exc()
+      return Response(status=500)
+
+def get_org_cpabe_secret():
+   # req_data = request.get_json()
+
+   # todo check if already exists
+
+   try:
+
+      req_data = request.json
+      name = req_data['name'].replace("/","")
+
+   except:
+      return Response(status=400)
+   
+   try:
+      bsw07 = CPABEAlg()
+
+      sk = load_cpabe_org_secret_key_from_name(bsw07, name)
+      print("{} sk[attribs]: {}".format(name, sk["S"]),flush=True)
+
+      ser_sk = bsw07.serialize_charm_obj(sk)
+
+      return ser_sk
+         
+   except FileNotFoundError:
+      return Response(status=400)
+
+   except:
+      traceback.print_exc()
+      return Response(status=500)
+
+
+def list_all_attributes():
+   global ATTIRB_COL
+
+   al_records = ATTIRB_COL.find({}, {"atttributes":1, "_id":0})
+   all_attribs = list()
+
+   for r in al_records:
+      all_attribs += r["atttributes"]
+
+   return {"atttributes": list(set(all_attribs))}, 200

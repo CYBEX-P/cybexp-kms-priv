@@ -2,4 +2,3 @@
 #jsonlines   # import json files
 #tqdm        # Progress bars uWu
 flask
-flask-jwt-extended

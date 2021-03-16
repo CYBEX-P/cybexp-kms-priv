@@ -1,3 +1,12 @@
+
+# please randomize this when first configureing this deployment
+# run this on a shell to create the key
+# python -c 'import os; print(os.urandom(16).hex())'
+# place output in FLASK_JWT_SECRET_KEY
+# regenerating this number efectively revokes all active tokens
+FLASK_JWT_SECRET_KEY: "edaaedb41f31d8141bb3e8ae6e261ec8"
+
+
 ####################################
 ########## Dev settings ############
 ####################################
@@ -16,6 +25,7 @@ backed_DB_uri: "mongodb://priv-kms-db:27017/"
 # db name and coll names
 db_name: KMS_db
 attrib_col_name: attributes
+users_col_name: Users
 
 # internal to this container
 DE_key_location: "/secrets/DE_key.pem" 
