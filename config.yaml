@@ -1,7 +1,7 @@
 
 # please randomize this when first configureing this deployment
 # run this on a shell to create the the random
-# python -c 'import os; print(os.urandom(16).hex())'
+# python3 -c 'import os; print(os.urandom(16).hex())'
 # place output in FLASK_JWT_SECRET_KEY
 # changing this number efectively revokes all active tokens
 FLASK_JWT_SECRET_KEY: "edaaedb41f31d8141bb3e8ae6e261ec8"
