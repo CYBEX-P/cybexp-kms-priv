@@ -32,9 +32,15 @@ def find_user(username):
       return None
 
 
-def add_admin(username, password):
+def add_sys_user(username, password, account_type):
    global USER_COL
 
+   if account_type.strip() == "admin":
+      print("account type: admin")
+      admin = True
+   else:
+      print("account type: limited/backend")
+      admin = False
    try:
       username = normalize_str(username)
       if type(username) != str:
@@ -53,7 +59,7 @@ def add_admin(username, password):
       traceback.print_exc()
       return False
 
-   user_record = {"salt": salt, "password": p_hash, "username":username, "admin":True}
+   user_record = {"salt": salt, "password": p_hash, "username":username, "admin":admin}
 
    # add user to DB
    try:
@@ -64,14 +70,14 @@ def add_admin(username, password):
       return False
 
    access_token = create_access_token(identity=username)
-   pprint({"access_token": access_token, "username": username, "admin": True})
+   pprint({"access_token": access_token, "username": username, "admin": admin})
    return True
 
 
 
 from server import app # import the context
 with app.app_context():
-   add_admin(sys.argv[1].strip(), sys.argv[2].strip())
+   add_sys_user(sys.argv[1].strip(), sys.argv[2].strip(), sys.argv[3].strip())
 
 
 
