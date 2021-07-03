@@ -175,6 +175,14 @@ def login():
 def create_user():
    global USER_COL
 
+   current_user = get_jwt_identity()
+   if not current_user:
+      return "", 403
+   caller_user_record = find_user(current_user)
+   is_admin = caller_user_record.get("admin", False)
+   if not is_admin:
+      return "Forbidden", 403
+
    username = request.json.get("username", None)
    password = request.json.get("password", None)
    password2 = request.json.get("password2", None)
@@ -192,9 +200,9 @@ def create_user():
        return "attributes must be list", 400
    except:
       # traceback.print_exc()
-      return Response(status=400)
+      return "attributes must be a list of strings", 400
 
-   if not username or not password or not password2 :#or not attribs:
+   if not username or not password or not password2 or not attribs:
       return "missing fileds, must include username, password, password2, attributes[list:str]", 400
    if password != password2:
       return"password and password2 must match", 400
@@ -226,7 +234,52 @@ def create_user():
 
 
    access_token = create_access_token(identity=username)
-   return jsonify(access_token=access_token, attributes=attribs, username=username)
+   return jsonify(access_token=access_token, attributes=attribs, username=username), 201
+
+
+
+@jwt_required()
+def recreate_user_private_keys():
+   global USER_COL, ATTIRB_COL
+
+   current_user = get_jwt_identity()
+   if not current_user:
+      return "", 403
+   caller_user_record = find_user(current_user)
+   is_admin = caller_user_record.get("admin", False)
+   if not is_admin:
+      return "Forbidden", 403
+
+   username = request.json.get("username", None)
+
+   # attributes normalization, username normalization
+   try: 
+      
+      username = normalize_str(username)
+      if type(username) != str:
+         return "name must be string", 400
+
+   except:
+      # traceback.print_exc()
+      return Response(status=400)
+
+   if not username:
+      return "missing fileds, must include username", 400
+
+   
+   attribs = ATTIRB_COL.find_one({"username":username}, {"attributes":1, "_id":0})
+
+   if not attribs:
+      return "User does not exist, please create instead", 400
+
+   # generate user's private key
+   priv_key_succes =  create_org_cpabe_secret(username, attribs)
+
+   if not priv_key_succes:
+      print("failed to create user's secret")
+      return Response(status=500)
+
+   return "created", 201
 
 
 @jwt_required()
@@ -302,7 +355,7 @@ def get_org_cpabe_secret():
       return ser_sk
          
    except FileNotFoundError:
-      print("Could not retrieve secret key for user {}. Seems like file was deleted, must bb regenerated manually.".format(username))
+      print("Could not retrieve secret key for user {}. Seems like file was deleted, must be regenerated manually.".format(username))
       return Response(status=500)
 
    except:

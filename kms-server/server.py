@@ -53,6 +53,9 @@ if __name__ == '__main__': # dont define rest of app if we are just importing co
    app.add_url_rule('/user/create', methods=['POST'], view_func=views.create_user) # will autogenerate sk for user
    app.add_url_rule('/user/me', methods=['GET'], view_func=views.me)
 
+   # key regeneration, use only if keys are accidentally delted for a user. system autgens them at user creation time
+   app.add_url_rule('/user/rekey', methods=['POST'], view_func=views.recreate_user_private_keys) # callable by admins only
+
 
 
 if __name__ == '__main__':

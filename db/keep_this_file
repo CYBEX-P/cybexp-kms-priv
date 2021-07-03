@@ -1,2 +1,4 @@
-keep this file for git purposes
-it will keep folder structure
+This file serves two purpuses:
+  - Keeps the folder structure on version control (git)
+  - This folder is a place for this module's instance to place its database (critical)
+

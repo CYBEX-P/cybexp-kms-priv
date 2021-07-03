@@ -39,8 +39,10 @@ def add_sys_user(username, password, account_type):
       print("account type: admin")
       admin = True
    else:
-      print("account type: limited/backend")
-      admin = False
+      # print("account type: limited/backend")
+      # admin = False
+      print("Account type not valid.")
+      return False
    try:
       username = normalize_str(username)
       if type(username) != str:
