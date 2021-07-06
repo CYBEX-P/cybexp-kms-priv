@@ -19,6 +19,20 @@ FLASK_DEBUG: false
 ##### no need to change below ######
 ####################################
 
+# OPE parameters
+
+# key length
+ORE_KEY_LENGTH: 256
+
+# input is 0 - (2^64 -1)
+OPE_IN_MIN: 0
+OPE_IN_MAX: 18446744073709551615
+
+# output is 0 - (2^128 -1)
+OPE_OUT_MIN: 0
+OPE_OUT_MAX: 340282366920938463463374607431768211455
+
+
 # where is the kms backend db
 backed_DB_uri: "mongodb://priv-kms-db:27017/"
 

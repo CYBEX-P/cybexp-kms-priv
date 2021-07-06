@@ -36,6 +36,13 @@ db_name = conf["db_name"]
 attrib_col_name = conf["attrib_col_name"]
 user_col_name = conf["users_col_name"]
 
+# ORE variables
+ORE_KEY_LENGTH = conf["ORE_KEY_LENGTH"] 
+OPE_IN_MIN = conf["OPE_IN_MIN"] 
+OPE_IN_MAX = conf["OPE_IN_MAX"]
+OPE_OUT_MIN = conf["OPE_OUT_MIN"] 
+OPE_OUT_MAX = conf["OPE_OUT_MAX"]
+
 
 ATTIRB_COL = db_common.get_collection(backed_DB_uri,db_name=db_name, col_name=attrib_col_name)
 USER_COL = db_common.get_collection(backed_DB_uri,db_name=db_name, col_name=user_col_name)
@@ -376,5 +383,15 @@ def list_all_attributes():
    return {"attributes": list(set(all_attribs))}, 200
 
 
+@jwt_required()
+def get_ore_params():
+   global OPE_IN_MIN, OPE_IN_MAX, OPE_OUT_MIN, OPE_OUT_MAX
+
+   return {
+            "ORE_IN_MIN": OPE_IN_MIN,
+            "ORE_IN_MAX": OPE_IN_MAX,
+            "ORE_OUT_MIN": OPE_OUT_MIN,
+            "ORE_OUT_MAX": OPE_OUT_MAX,
+          }, 200
 
 

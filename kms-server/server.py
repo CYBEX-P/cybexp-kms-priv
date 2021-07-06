@@ -56,7 +56,8 @@ if __name__ == '__main__': # dont define rest of app if we are just importing co
    # key regeneration, use only if keys are accidentally delted for a user. system autgens them at user creation time
    app.add_url_rule('/user/rekey', methods=['POST'], view_func=views.recreate_user_private_keys) # callable by admins only
 
-
+   # misc
+   app.add_url_rule('/get/range/ore', methods=['GET'], view_func=views.get_ore_params)
 
 if __name__ == '__main__':
    app.run(host="0.0.0.0", port=5000 , debug=DEBUG, use_reloader=DEBUG)
