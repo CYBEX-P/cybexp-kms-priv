@@ -186,6 +186,8 @@ def create_user():
    if not current_user:
       return "", 403
    caller_user_record = find_user(current_user)
+   if not caller_user_record:
+      return "Forbidden", 403
    is_admin = caller_user_record.get("admin", False)
    if not is_admin:
       return "Forbidden", 403
@@ -253,6 +255,8 @@ def recreate_user_private_keys():
    if not current_user:
       return "", 403
    caller_user_record = find_user(current_user)
+   if not caller_user_record:
+      return "Forbidden", 403
    is_admin = caller_user_record.get("admin", False)
    if not is_admin:
       return "Forbidden", 403
